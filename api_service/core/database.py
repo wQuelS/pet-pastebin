@@ -1,21 +1,24 @@
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-
-from typing import Any
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from api_service.core.config import settings
 
-engine = create_async_engine(
-    settings.db.DATABASE_URI,
+
+class DatabaseHelper:
+    def __init__(self, url: str, echo: bool, **kwargs) -> None:
+        self.engine = create_async_engine(url=url, echo=echo, **kwargs)
+
+        self.session_factory = async_sessionmaker(
+            bind=self.engine,
+            autoflush=False,
+            autocommit=False,
+            expire_on_commit=False
+        )
+
+
+db_helper = DatabaseHelper(
+    url=settings.db.DATABASE_URI,
     echo=settings.echo,
     future=settings.future,
     pool_size=settings.pool_size,
-    max_overflow=settings.max_overflow,
+    max_overflow=settings.max_overflow
 )
-
-async_session = sessionmaker(
-    engine, class_=AsyncSession, expire_on_commit=settings.expire_on_commit
-)
-
-Base: Any = declarative_base()
