@@ -27,7 +27,7 @@ class DbSettings(BaseSettings):
             password=values.data.get("POSTGRES_PASSWORD"),
             host=values.data.get("POSTGRES_HOST"),
             port=values.data.get("POSTGRES_PORT"),
-            path=values.data.get("POSTGRES_DB") or "",
+            path=f"{values.data.get('POSTGRES_DB') or ''}" ,
         ).unicode_string()
 
 
